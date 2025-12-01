@@ -1,9 +1,9 @@
-import Header from "./components/header/Header";
+import StocksTable from "./components/StocksList/stocksTable";
 
 function App() {
   return (
-    <div className="bg-slate-700 min-h-screen w-full">
-      <Header />
+    <div className="bg-slate-200 min-h-screen w-full">
+      <StocksTable />
     </div>
   );
 }
