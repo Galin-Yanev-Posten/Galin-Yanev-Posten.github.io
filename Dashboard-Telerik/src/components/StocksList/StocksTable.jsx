@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import MonthlyChart from "../MonthlyChart/MonthlyChart";
 import stocksData from "./stocksData.js";
 
 const StocksTable = () => {
@@ -6,35 +7,19 @@ const StocksTable = () => {
   const [stocks, setStocks] = useState(stocksData.stock);
   const [selectedStock, setSelectedStock] = useState(null);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const apiKey = import.meta.env.VITE_API_KEY;
-  //     try {
-  //       const response = await fetch(
-  //         `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=NVDA&apikey=${apiKey}`
-  //       );
-  //       const data = await response.json();
-
-  //       // Save all categories to localStorage
-  //       localStorage.setItem("topStocksData", JSON.stringify(data));
-
-  //       // Set the current category
-  //       setStocks(data);
-  //       console.log(data);
-  //     } catch (err) {
-  //       console.error("Error fetching stocks:", err);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
+  // If you later want to fetch from API, use this effect:
+  // useEffect(() => { ...fetch and setStocks... }, []);
 
   const handleRowClick = (symbol) => {
-    setSelectedStock(selectedStock === symbol ? null : symbol);
+    const next = selectedStock === symbol ? null : symbol;
+    setSelectedStock(next);
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 max-w-4xl mx-auto space-y-6">
+      {/* MonthlyChart shows price movement for the selected stock */}
+      <MonthlyChart selectedSymbol={selectedStock} />
+
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300">
           <thead className="bg-gray-100">
