@@ -4,7 +4,11 @@ import StocksTable from "../components/StocksList/StocksTable";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState({ firstName: "", lastName: "", avatar: "" });
+  const [userData, setUserData] = useState({
+    firstName: "",
+    lastName: "",
+    avatar: "",
+  });
 
   useEffect(() => {
     const data = localStorage.getItem("userData");
@@ -29,7 +33,8 @@ export default function Dashboard() {
                 />
               ) : (
                 <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-semibold border-2 border-gray-300">
-                  {userData.firstName?.charAt(0)}{userData.lastName?.charAt(0)}
+                  {userData.firstName?.charAt(0)}
+                  {userData.lastName?.charAt(0)}
                 </div>
               )}
               {/* <span className="text-sm text-gray-700 hidden sm:inline">
