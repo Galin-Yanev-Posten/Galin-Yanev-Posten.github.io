@@ -37,7 +37,7 @@ export default function Profile() {
                             email: user.email || "",
                         }));
                     }
-                } catch (err) {
+                } catch {
                     setError("Failed to load profile data");
                 }
             } else {
@@ -93,7 +93,7 @@ export default function Profile() {
                         avatar: profileData.avatar || "",
                     });
                 }
-            } catch (err) {
+            } catch {
                 setError("Failed to reload profile data");
             }
         }

@@ -3,7 +3,7 @@ import MonthlyChart from "../MonthlyChart/MonthlyChart";
 import stocksData from "./stocksData.js";
 
 const StocksTable = () => {
-  const [stocks, setStocks] = useState(stocksData.stock);
+  const [stocks] = useState(stocksData.stock);
   const [selectedStock, setSelectedStock] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [filterText, setFilterText] = useState("");
