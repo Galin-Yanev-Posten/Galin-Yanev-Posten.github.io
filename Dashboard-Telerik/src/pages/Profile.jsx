@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { auth, getUserProfile, onAuthStateChanged, updateUserProfile } from "../firebase/auth";
 
 export default function Profile() {
     const [isEditing, setIsEditing] = useState(false);
@@ -12,15 +13,41 @@ export default function Profile() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [currentUser, setCurrentUser] = useState(null);
     const navigate = useNavigate();
 
-    // Load user data from localStorage on component mount
+    // Listen to auth state and load user profile from Firestore
     useEffect(() => {
-        const userData = localStorage.getItem("userData");
-        if (userData) {
-            setFormData(JSON.parse(userData));
-        }
-    }, []);
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                setCurrentUser(user);
+                try {
+                    const profileData = await getUserProfile(user.uid);
+                    if (profileData) {
+                        setFormData({
+                            firstName: profileData.firstName || "",
+                            lastName: profileData.lastName || "",
+                            email: profileData.email || user.email || "",
+                            avatar: profileData.avatar || "",
+                        });
+                    } else {
+                        // If no profile data, set email from auth
+                        setFormData(prev => ({
+                            ...prev,
+                            email: user.email || "",
+                        }));
+                    }
+                } catch (err) {
+                    setError("Failed to load profile data");
+                }
+            } else {
+                setCurrentUser(null);
+                navigate("/login"); // Redirect if not authenticated
+            }
+        });
+
+        return () => unsubscribe();
+    }, [navigate]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -50,14 +77,25 @@ export default function Profile() {
         setSuccess("");
     };
 
-    const handleCancel = () => {
+    const handleCancel = async () => {
         setIsEditing(false);
         setError("");
         setSuccess("");
-        // Reload data from localStorage
-        const userData = localStorage.getItem("userData");
-        if (userData) {
-            setFormData(JSON.parse(userData));
+        // Reload data from Firestore
+        if (currentUser) {
+            try {
+                const profileData = await getUserProfile(currentUser.uid);
+                if (profileData) {
+                    setFormData({
+                        firstName: profileData.firstName || "",
+                        lastName: profileData.lastName || "",
+                        email: profileData.email || currentUser.email || "",
+                        avatar: profileData.avatar || "",
+                    });
+                }
+            } catch (err) {
+                setError("Failed to reload profile data");
+            }
         }
 
         setTimeout(() => {
@@ -78,7 +116,23 @@ export default function Profile() {
                 return;
             }
 
+            if (!currentUser) {
+                setError("User not authenticated");
+                setLoading(false);
+                return;
+            }
+
+            // Update profile in Firestore
+            await updateUserProfile(currentUser.uid, {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email,
+                avatar: formData.avatar,
+            });
+
+            // Optionally update localStorage for quick access
             localStorage.setItem("userData", JSON.stringify(formData));
+
             setSuccess("Profile updated successfully!");
             setIsEditing(false);
             setLoading(false);
