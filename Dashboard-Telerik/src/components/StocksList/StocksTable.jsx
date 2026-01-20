@@ -1,12 +1,15 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setFilterText, toggleSelectedSymbol } from "../../store/stocksSlice";
 import MonthlyChart from "../MonthlyChart/MonthlyChart";
 import stocksData from "./stocksData.js";
 
 const StocksTable = () => {
-  const [stocks] = useState(stocksData.stock);
-  const [selectedStock, setSelectedStock] = useState(null);
+  const dispatch = useDispatch();
+  const stocks = stocksData.stock;
+  const selectedStock = useSelector((state) => state.stocks.selectedSymbol);
+  const filterText = useSelector((state) => state.stocks.filterText);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
-  const [filterText, setFilterText] = useState("");
 
   const handleSort = (key) => {
     let direction = "asc";
@@ -49,8 +52,7 @@ const StocksTable = () => {
   };
 
   const handleRowClick = (symbol) => {
-    const next = selectedStock === symbol ? null : symbol;
-    setSelectedStock(next);
+    dispatch(toggleSelectedSymbol(symbol));
   };
 
   return (
@@ -64,7 +66,7 @@ const StocksTable = () => {
           type="text"
           placeholder="Filter by symbol or name..."
           value={filterText}
-          onChange={(e) => setFilterText(e.target.value)}
+          onChange={(e) => dispatch(setFilterText(e.target.value))}
           className=" px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
