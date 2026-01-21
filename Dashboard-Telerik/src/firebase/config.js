@@ -3,11 +3,20 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBdgNgD7xGolYib9KJBnyTyUaQR2ox2rqg",
-  authDomain: "telerik-final-a51ee.firebaseapp.com",
-  projectId: "telerik-final-a51ee",
-  storageBucket: "telerik-final-a51ee.appspot.com",
-  messagingSenderId: "713151190832",
+  // Recommendation: Move config to Vite env vars (VITE_FIREBASE_*) for easier env switching.
+  apiKey:
+    import.meta.env.VITE_FIREBASE_API_KEY ||
+    "AIzaSyBdgNgD7xGolYib9KJBnyTyUaQR2ox2rqg",
+  authDomain:
+    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ||
+    "telerik-final-a51ee.firebaseapp.com",
+  projectId:
+    import.meta.env.VITE_FIREBASE_PROJECT_ID || "telerik-final-a51ee",
+  storageBucket:
+    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ||
+    "telerik-final-a51ee.appspot.com",
+  messagingSenderId:
+    import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "713151190832",
 };
 
 const app = initializeApp(firebaseConfig);

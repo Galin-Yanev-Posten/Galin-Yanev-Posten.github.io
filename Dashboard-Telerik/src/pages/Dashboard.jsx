@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import StocksTable from "../components/StocksList/StocksTable";
+import { useAuth } from "../context/AuthContext";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { logOut } = useAuth();
   const [userData, setUserData] = useState({
     firstName: "",
     lastName: "",
@@ -16,6 +18,13 @@ export default function Dashboard() {
       setUserData(JSON.parse(data));
     }
   }, []);
+
+  const handleLogout = async () => {
+    // Recommendation: Sign out through Firebase and clear cached user data.
+    await logOut();
+    localStorage.removeItem("userData");
+    navigate("/login", { replace: true });
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -49,7 +58,7 @@ export default function Dashboard() {
               Profile
             </button>
             <button
-              onClick={() => navigate("/login")}
+              onClick={handleLogout}
               className="bg-black text-white text-sm px-4 py-2 rounded-md hover:bg-gray-400"
             >
               Log out

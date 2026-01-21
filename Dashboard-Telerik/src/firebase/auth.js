@@ -7,7 +7,7 @@ import {
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "./config";
 
-export async function signUp(email, password, displayName) {
+export async function signUp(email, password, profile) {
   const userCredential = await createUserWithEmailAndPassword(
     auth,
     email,
@@ -15,7 +15,12 @@ export async function signUp(email, password, displayName) {
   );
   const user = userCredential.user;
 
+  const displayName = `${profile.firstName} ${profile.lastName}`.trim();
+
+  // Recommendation: Store first/last name explicitly so Profile can render consistent fields.
   await setDoc(doc(db, "users", user.uid), {
+    firstName: profile.firstName,
+    lastName: profile.lastName,
     displayName,
     email,
     createdAt: new Date().toISOString(),

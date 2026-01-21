@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, getUserProfile, onAuthStateChanged, updateUserProfile } from "../firebase/auth";
+import InputField from "../components/Form/InputField";
+import { useAuth } from "../context/AuthContext";
+import { getUserProfile, updateUserProfile } from "../firebase/auth";
+import { validateProfile } from "../utils/validators";
 
 export default function Profile() {
     const [isEditing, setIsEditing] = useState(false);
@@ -13,41 +16,39 @@ export default function Profile() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
-    const [currentUser, setCurrentUser] = useState(null);
     const navigate = useNavigate();
+    const { user } = useAuth();
 
-    // Listen to auth state and load user profile from Firestore
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                setCurrentUser(user);
-                try {
-                    const profileData = await getUserProfile(user.uid);
-                    if (profileData) {
-                        setFormData({
-                            firstName: profileData.firstName || "",
-                            lastName: profileData.lastName || "",
-                            email: profileData.email || user.email || "",
-                            avatar: profileData.avatar || "",
-                        });
-                    } else {
-                        // If no profile data, set email from auth
-                        setFormData(prev => ({
-                            ...prev,
-                            email: user.email || "",
-                        }));
-                    }
-                } catch {
-                    setError("Failed to load profile data");
-                }
-            } else {
-                setCurrentUser(null);
-                navigate("/login"); // Redirect if not authenticated
-            }
-        });
+        if (!user) {
+            navigate("/login");
+            return;
+        }
 
-        return () => unsubscribe();
-    }, [navigate]);
+        const loadProfile = async () => {
+            // Recommendation: Load profile data once per auth state change.
+            try {
+                const profileData = await getUserProfile(user.uid);
+                if (profileData) {
+                    setFormData({
+                        firstName: profileData.firstName || "",
+                        lastName: profileData.lastName || "",
+                        email: profileData.email || user.email || "",
+                        avatar: profileData.avatar || "",
+                    });
+                } else {
+                    setFormData(prev => ({
+                        ...prev,
+                        email: user.email || "",
+                    }));
+                }
+            } catch {
+                setError("Failed to load profile data");
+            }
+        };
+
+        loadProfile();
+    }, [navigate, user]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -82,14 +83,14 @@ export default function Profile() {
         setError("");
         setSuccess("");
         // Reload data from Firestore
-        if (currentUser) {
+        if (user) {
             try {
-                const profileData = await getUserProfile(currentUser.uid);
+                const profileData = await getUserProfile(user.uid);
                 if (profileData) {
                     setFormData({
                         firstName: profileData.firstName || "",
                         lastName: profileData.lastName || "",
-                        email: profileData.email || currentUser.email || "",
+                        email: profileData.email || user.email || "",
                         avatar: profileData.avatar || "",
                     });
                 }
@@ -98,9 +99,7 @@ export default function Profile() {
             }
         }
 
-        setTimeout(() => {
-            navigate("/dashboard", { replace: true });
-        }, 1500);
+        // Recommendation: Cancel stays on the profile instead of redirecting away.
         
     };
 
@@ -110,20 +109,22 @@ export default function Profile() {
         setLoading(true);
 
         try {
-            if (!formData.firstName || !formData.lastName || !formData.email) {
-                setError("All fields are required");
+            // Recommendation: Keep validation logic in a shared helper to avoid duplication.
+            const validationError = validateProfile(formData);
+            if (validationError) {
+                setError(validationError);
                 setLoading(false);
                 return;
             }
 
-            if (!currentUser) {
+            if (!user) {
                 setError("User not authenticated");
                 setLoading(false);
                 return;
             }
 
             // Update profile in Firestore
-            await updateUserProfile(currentUser.uid, {
+            await updateUserProfile(user.uid, {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
                 email: formData.email,
@@ -224,40 +225,36 @@ export default function Profile() {
                         </div>
 
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">First Name</label>
-                            <input
-                                type="text"
+                            {/* Recommendation: Use the shared InputField to keep form markup consistent. */}
+                            <InputField
+                                label="First Name"
                                 name="firstName"
                                 value={formData.firstName}
                                 onChange={handleChange}
                                 placeholder="First Name"
-                                className="block w-full border border-gray-200 rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/10"
                                 required
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">Last Name</label>
-                            <input
-                                type="text"
+                            <InputField
+                                label="Last Name"
                                 name="lastName"
                                 value={formData.lastName}
                                 onChange={handleChange}
                                 placeholder="Last Name"
-                                className="block w-full border border-gray-200 rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/10"
                                 required
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm text-gray-600 mb-1">Email</label>
-                            <input
-                                type="email"
+                            <InputField
+                                label="Email"
                                 name="email"
+                                type="email"
                                 value={formData.email}
                                 onChange={handleChange}
                                 placeholder="Email"
-                                className="block w-full border border-gray-200 rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/10"
                                 required
                             />
                         </div>

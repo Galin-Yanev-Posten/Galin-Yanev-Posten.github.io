@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signIn } from "../firebase/auth";
+import InputField from "../components/Form/InputField";
+import { useAuth } from "../context/AuthContext";
+import { mapAuthError } from "../utils/authErrors";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -8,6 +10,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { signIn } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,10 +18,12 @@ export default function Login() {
     setLoading(true);
 
     try {
+      // Recommendation: Map Firebase errors to friendlier messages for better UX.
       await signIn(email, password);
       navigate("/dashboard");
     } catch (err) {
-      setError(err.message);
+      const friendly = mapAuthError(err.code);
+      setError(friendly || err.message);
     } finally {
       setLoading(false);
     }
@@ -38,26 +43,28 @@ export default function Login() {
           <p className="text-red-600 text-sm mb-4 text-center">{error}</p>
         )}
 
-        <label className="block text-sm text-gray-600 mb-1">Email</label>
-        <input
+        {/* Recommendation: Reuse a shared input component to reduce duplicated markup. */}
+        <InputField
+          label="Email"
+          name="email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your e-mail"
-          className="block w-full border border-gray-200 rounded-md px-3 py-2 mb-4 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/10"
           disabled={loading}
           required
+          className="mb-4"
         />
-
-        <label className="block text-sm text-gray-600 mb-1">Password</label>
-        <input
+        <InputField
+          label="Password"
+          name="password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Enter your password"
-          className="block w-full border border-gray-200 rounded-md px-3 py-2 mb-6 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/10"
           disabled={loading}
           required
+          className="mb-6"
         />
 
         <div className="flex justify-center">

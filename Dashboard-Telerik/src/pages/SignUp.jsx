@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signUp } from "../firebase/auth";
+import InputField from "../components/Form/InputField";
+import { useAuth } from "../context/AuthContext";
+import { mapAuthError } from "../utils/authErrors";
+import { validateSignUp } from "../utils/validators";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -14,6 +17,7 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { signUp } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,44 +33,24 @@ export default function SignUp() {
     setLoading(true);
 
     try {
-      // Validation
-      if (
-        !formData.firstName ||
-        !formData.lastName ||
-        !formData.email ||
-        !formData.password
-      ) {
-        setError("All fields are required");
+      // Recommendation: Keep form validation in a small helper for reuse and readability.
+      const validationError = validateSignUp(formData);
+      if (validationError) {
+        setError(validationError);
         setLoading(false);
         return;
       }
 
-      if (formData.email !== formData.confirmEmail) {
-        setError("Emails do not match");
-        setLoading(false);
-        return;
-      }
+      // Recommendation: Store first/last name during sign-up so Profile can render them.
+      await signUp(formData.email, formData.password, {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+      });
 
-      if (formData.password !== formData.confirmPassword) {
-        setError("Passwords do not match");
-        setLoading(false);
-        return;
-      }
-
-      if (formData.password.length < 6) {
-        setError("Password must be at least 6 characters");
-        setLoading(false);
-        return;
-      }
-
-      // Create user with Firebase
-      const displayName = `${formData.firstName} ${formData.lastName}`;
-      await signUp(formData.email, formData.password, displayName);
-
-      console.log("Sign up successful, redirecting to dashboard...");
       navigate("/dashboard", { replace: true });
     } catch (err) {
-      setError(err.message || "Sign up failed");
+      const friendly = mapAuthError(err.code);
+      setError(friendly || err.message || "Sign up failed");
     } finally {
       setLoading(false);
     }
@@ -86,89 +70,76 @@ export default function SignUp() {
           <p className="text-red-600 text-sm mb-4 text-center">{error}</p>
         )}
 
+        {/* Recommendation: Use a shared input component to cut down repetitive JSX. */}
         <div className="flex gap-3 mb-4">
-          <div className="flex-1">
-            <label className="block text-sm text-gray-600 mb-1">
-              First Name
-            </label>
-            <input
-              type="text"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              placeholder="First Name"
-              className="block w-full border border-gray-200 rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/10"
-              disabled={loading}
-              required
-            />
-          </div>
-          <div className="flex-1">
-            <label className="block text-sm text-gray-600 mb-1">
-              Last Name
-            </label>
-            <input
-              type="text"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              placeholder="Last Name"
-              className="block w-full border border-gray-200 rounded-md px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/10"
-              disabled={loading}
-              required
-            />
-          </div>
+          <InputField
+            label="First Name"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            placeholder="First Name"
+            disabled={loading}
+            required
+            className="flex-1"
+          />
+          <InputField
+            label="Last Name"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            placeholder="Last Name"
+            disabled={loading}
+            required
+            className="flex-1"
+          />
         </div>
 
-        <label className="block text-sm text-gray-600 mb-1">Email</label>
-        <input
-          type="email"
+        <InputField
+          label="Email"
           name="email"
+          type="email"
           value={formData.email}
           onChange={handleChange}
           placeholder="Enter your email"
-          className="block w-full border border-gray-200 rounded-md px-3 py-2 mb-4 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/10"
           disabled={loading}
           required
+          className="mb-4"
         />
 
-        <label className="block text-sm text-gray-600 mb-1">
-          Confirm Email
-        </label>
-        <input
-          type="email"
+        <InputField
+          label="Confirm Email"
           name="confirmEmail"
+          type="email"
           value={formData.confirmEmail}
           onChange={handleChange}
           placeholder="Confirm your email"
-          className="block w-full border border-gray-200 rounded-md px-3 py-2 mb-4 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/10"
           disabled={loading}
           required
+          className="mb-4"
         />
 
-        <label className="block text-sm text-gray-600 mb-1">Password</label>
-        <input
-          type="password"
+        <InputField
+          label="Password"
           name="password"
+          type="password"
           value={formData.password}
           onChange={handleChange}
           placeholder="Enter your password"
-          className="block w-full border border-gray-200 rounded-md px-3 py-2 mb-4 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/10"
           disabled={loading}
           required
+          className="mb-4"
         />
 
-        <label className="block text-sm text-gray-600 mb-1">
-          Confirm Password
-        </label>
-        <input
-          type="password"
+        <InputField
+          label="Confirm Password"
           name="confirmPassword"
+          type="password"
           value={formData.confirmPassword}
           onChange={handleChange}
           placeholder="Confirm your password"
-          className="block w-full border border-gray-200 rounded-md px-3 py-2 mb-6 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black/10"
           disabled={loading}
           required
+          className="mb-6"
         />
 
         <div className="flex justify-center">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import {
     CartesianGrid,
     Legend,
@@ -9,43 +9,33 @@ import {
     XAxis,
     YAxis,
 } from "recharts";
-import { fetchMonthlyData } from "../../services/alphaVantage";
+import { useGetMonthlySeriesQuery } from "../../store/alphaVantageApi";
+import { API_KEY } from "../../services/alphaVantage";
 
 export default function MonthlyChart({ selectedSymbol }) {
-    const [chartData, setChartData] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [monthsBack, setMonthsBack] = useState(12);
 
-    useEffect(() => {
-        if (!selectedSymbol) return;
+    const { data, isLoading, isError } = useGetMonthlySeriesQuery(
+        selectedSymbol,
+        {
+            skip: !selectedSymbol,
+        }
+    );
 
-        const loadData = async () => {
-            setLoading(true);
-            try {
-                const monthlyData = await fetchMonthlyData(selectedSymbol);
-                
-                if (monthlyData) {
-                    const sorted = Object.entries(monthlyData)
-                        .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
-                        .slice(-monthsBack)
-                        .map(([date, values]) => ({
-                            date,
-                            price: parseFloat(values["4. close"]),
-                            high: parseFloat(values["2. high"]),
-                            low: parseFloat(values["3. low"]),
-                        }));
+    const monthlyData = data?.["Monthly Time Series"];
+    const chartData = useMemo(() => {
+        if (!monthlyData) return [];
 
-                    setChartData(sorted);
-                }
-            } catch (error) {
-                console.error("Error loading chart data:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadData();
-    }, [selectedSymbol, monthsBack]);
+        return Object.entries(monthlyData)
+            .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
+            .slice(-monthsBack)
+            .map(([date, values]) => ({
+                date,
+                price: parseFloat(values["4. close"]),
+                high: parseFloat(values["2. high"]),
+                low: parseFloat(values["3. low"]),
+            }));
+    }, [monthlyData, monthsBack]);
 
     if (!selectedSymbol) {
         return (
@@ -55,10 +45,27 @@ export default function MonthlyChart({ selectedSymbol }) {
         );
     }
 
-    if (loading) {
+    // Recommendation: Short-circuit on missing API key so the UI stays clear.
+    if (!API_KEY) {
+        return (
+            <div className="bg-white border border-gray-300 rounded-lg p-8 text-center">
+                <p className="text-gray-600">Missing API key for chart data.</p>
+            </div>
+        );
+    }
+
+    if (isLoading) {
         return (
             <div className="bg-white border border-gray-300 rounded-lg p-8 text-center">
                 <p className="text-gray-600">Loading chart...</p>
+            </div>
+        );
+    }
+
+    if (isError) {
+        return (
+            <div className="bg-white border border-gray-300 rounded-lg p-8 text-center">
+                <p className="text-gray-600">Could not load chart data.</p>
             </div>
         );
     }

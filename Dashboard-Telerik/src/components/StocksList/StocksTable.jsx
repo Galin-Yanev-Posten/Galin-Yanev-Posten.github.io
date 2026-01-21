@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import MonthlyChart from "../MonthlyChart/MonthlyChart";
 import stocksData from "./stocksData.js";
 
@@ -16,7 +16,8 @@ const StocksTable = () => {
     setSortConfig({ key, direction });
   };
 
-  const getProcessedStocks = () => {
+  // Recommendation: Memoize processed rows to avoid sorting on every render.
+  const processedStocks = useMemo(() => {
     let processed = [...stocks];
 
     // Apply filtering
@@ -46,7 +47,7 @@ const StocksTable = () => {
     }
 
     return processed;
-  };
+  }, [stocks, filterText, sortConfig]);
 
   const handleRowClick = (symbol) => {
     const next = selectedStock === symbol ? null : symbol;
@@ -101,7 +102,7 @@ const StocksTable = () => {
           </thead>
 
           <tbody>
-            {getProcessedStocks().map((stock) => (
+            {processedStocks.map((stock) => (
               <tr
                 key={stock.symbol}
                 onClick={() => handleRowClick(stock.symbol)}
