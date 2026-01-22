@@ -1,3 +1,4 @@
+import { getAuth } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import StocksTable from "../components/StocksList/StocksTable";
@@ -16,6 +17,13 @@ export default function Dashboard() {
       setUserData(JSON.parse(data));
     }
   }, []);
+
+  function handleLogout() {
+    const auth = getAuth();
+    auth.signOut().then(() => {
+      navigate("/login");
+    });
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -49,7 +57,7 @@ export default function Dashboard() {
               Profile
             </button>
             <button
-              onClick={() => navigate("/login")}
+              onClick={handleLogout}
               className="bg-black text-white text-sm px-4 py-2 rounded-md hover:bg-gray-400"
             >
               Log out

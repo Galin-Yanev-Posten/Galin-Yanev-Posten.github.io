@@ -1,9 +1,10 @@
 export default function ProfileField({ label, value, name, onChange, editable, type = "text" }) {
     return (
         <div>
-            <label className="block text-sm text-gray-600 mb-1">{label}</label>
+            <label htmlFor={name} className="block text-sm text-gray-600 mb-1">{label}</label>
             {editable ? (
                 <input
+                    id={name}
                     type={type}
                     name={name}
                     value={value}
