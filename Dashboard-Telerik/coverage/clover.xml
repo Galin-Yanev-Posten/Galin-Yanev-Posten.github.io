@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1769110196728" clover="3.2.0">
-  <project timestamp="1769110196728" name="All files">
-    <metrics statements="271" coveredstatements="71" conditionals="148" coveredconditionals="25" methods="84" coveredmethods="21" elements="503" coveredelements="117" complexity="0" loc="271" ncloc="271" packages="11" files="23" classes="23"/>
+<coverage generated="1769118501605" clover="3.2.0">
+  <project timestamp="1769118501605" name="All files">
+    <metrics statements="271" coveredstatements="104" conditionals="148" coveredconditionals="59" methods="84" coveredmethods="34" elements="503" coveredelements="197" complexity="0" loc="271" ncloc="271" packages="11" files="23" classes="23"/>
     <package name="src">
       <metrics statements="2" coveredstatements="2" conditionals="4" coveredconditionals="2" methods="1" coveredmethods="1"/>
       <file name="App.jsx" path="C:\Users\yanevg\OneDrive - Posten Norge\Documents\Bring Documents\React\Dashboard-Telerik\src\App.jsx">
@@ -74,49 +74,49 @@
       </file>
     </package>
     <package name="src.components.StocksList">
-      <metrics statements="37" coveredstatements="2" conditionals="36" coveredconditionals="0" methods="14" coveredmethods="0"/>
+      <metrics statements="37" coveredstatements="34" conditionals="36" coveredconditionals="34" methods="14" coveredmethods="12"/>
       <file name="StocksTable.jsx" path="C:\Users\yanevg\OneDrive - Posten Norge\Documents\Bring Documents\React\Dashboard-Telerik\src\components\StocksList\StocksTable.jsx">
-        <metrics statements="36" coveredstatements="1" conditionals="36" coveredconditionals="0" methods="14" coveredmethods="0"/>
-        <line num="7" count="1" type="stmt"/>
-        <line num="8" count="0" type="stmt"/>
-        <line num="9" count="0" type="stmt"/>
-        <line num="10" count="0" type="stmt"/>
-        <line num="11" count="0" type="stmt"/>
-        <line num="12" count="0" type="stmt"/>
-        <line num="14" count="0" type="stmt"/>
-        <line num="15" count="0" type="stmt"/>
-        <line num="16" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="17" count="0" type="stmt"/>
-        <line num="19" count="0" type="stmt"/>
-        <line num="22" count="0" type="stmt"/>
-        <line num="23" count="0" type="stmt"/>
-        <line num="26" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="27" count="0" type="stmt"/>
-        <line num="29" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="35" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="36" count="0" type="stmt"/>
-        <line num="37" count="0" type="stmt"/>
-        <line num="38" count="0" type="stmt"/>
-        <line num="40" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="41" count="0" type="stmt"/>
-        <line num="42" count="0" type="stmt"/>
-        <line num="45" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="46" count="0" type="cond" truecount="0" falsecount="4"/>
+        <metrics statements="36" coveredstatements="33" conditionals="36" coveredconditionals="34" methods="14" coveredmethods="12"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="14" type="stmt"/>
+        <line num="9" count="14" type="stmt"/>
+        <line num="10" count="22" type="stmt"/>
+        <line num="11" count="22" type="stmt"/>
+        <line num="12" count="14" type="stmt"/>
+        <line num="14" count="14" type="stmt"/>
+        <line num="15" count="6" type="stmt"/>
+        <line num="16" count="6" type="cond" truecount="4" falsecount="0"/>
+        <line num="17" count="3" type="stmt"/>
+        <line num="19" count="6" type="stmt"/>
+        <line num="22" count="14" type="stmt"/>
+        <line num="23" count="14" type="stmt"/>
+        <line num="26" count="14" type="cond" truecount="2" falsecount="0"/>
+        <line num="27" count="5" type="stmt"/>
+        <line num="29" count="25" type="cond" truecount="2" falsecount="0"/>
+        <line num="35" count="14" type="cond" truecount="2" falsecount="0"/>
+        <line num="36" count="6" type="stmt"/>
+        <line num="37" count="49" type="stmt"/>
+        <line num="38" count="49" type="stmt"/>
+        <line num="40" count="49" type="cond" truecount="4" falsecount="0"/>
+        <line num="41" count="32" type="stmt"/>
+        <line num="42" count="32" type="stmt"/>
+        <line num="45" count="49" type="cond" truecount="4" falsecount="0"/>
+        <line num="46" count="28" type="cond" truecount="3" falsecount="1"/>
         <line num="47" count="0" type="stmt"/>
-        <line num="51" count="0" type="stmt"/>
-        <line num="54" count="0" type="stmt"/>
+        <line num="51" count="14" type="stmt"/>
+        <line num="54" count="14" type="stmt"/>
         <line num="55" count="0" type="stmt"/>
-        <line num="58" count="0" type="stmt"/>
-        <line num="69" count="0" type="stmt"/>
-        <line num="79" count="0" type="stmt"/>
-        <line num="87" count="0" type="stmt"/>
-        <line num="95" count="0" type="stmt"/>
-        <line num="107" count="0" type="stmt"/>
+        <line num="58" count="14" type="stmt"/>
+        <line num="69" count="5" type="stmt"/>
+        <line num="79" count="2" type="stmt"/>
+        <line num="87" count="2" type="stmt"/>
+        <line num="95" count="2" type="stmt"/>
+        <line num="107" count="50" type="stmt"/>
         <line num="109" count="0" type="stmt"/>
       </file>
       <file name="stocksData.js" path="C:\Users\yanevg\OneDrive - Posten Norge\Documents\Bring Documents\React\Dashboard-Telerik\src\components\StocksList\stocksData.js">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="1" count="1" type="stmt"/>
+        <line num="1" count="2" type="stmt"/>
       </file>
     </package>
     <package name="src.components.common">
@@ -364,15 +364,15 @@
       </file>
     </package>
     <package name="src.store">
-      <metrics statements="6" coveredstatements="3" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="0"/>
+      <metrics statements="6" coveredstatements="4" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="1"/>
       <file name="stocksSlice.js" path="C:\Users\yanevg\OneDrive - Posten Norge\Documents\Bring Documents\React\Dashboard-Telerik\src\store\stocksSlice.js">
-        <metrics statements="6" coveredstatements="3" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="0"/>
-        <line num="3" count="1" type="stmt"/>
-        <line num="8" count="1" type="stmt"/>
-        <line num="13" count="0" type="stmt"/>
+        <metrics statements="6" coveredstatements="4" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="1"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="13" count="5" type="stmt"/>
         <line num="16" count="0" type="stmt"/>
         <line num="17" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="22" count="1" type="stmt"/>
+        <line num="22" count="2" type="stmt"/>
       </file>
     </package>
   </project>
