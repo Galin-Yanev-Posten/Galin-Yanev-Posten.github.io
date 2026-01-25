@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signIn } from "../firebase/auth";
+import { getUserProfile, signIn } from "../firebase/auth";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -15,7 +15,25 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await signIn(email, password);
+      const userCredential = await signIn(email, password);
+      const user = userCredential.user;
+      // Fetch user profile from Firestore
+      const profileData = await getUserProfile(user.uid);
+      if (profileData) {
+        localStorage.setItem("userData", JSON.stringify({
+          firstName: profileData.firstName || "",
+          lastName: profileData.lastName || "",
+          email: profileData.email || user.email || "",
+          avatar: profileData.avatar || "",
+        }));
+      } else {
+        localStorage.setItem("userData", JSON.stringify({
+          firstName: "",
+          lastName: "",
+          email: user.email || "",
+          avatar: "",
+        }));
+      }
       navigate("/dashboard");
     } catch (err) {
       setError(err.message);

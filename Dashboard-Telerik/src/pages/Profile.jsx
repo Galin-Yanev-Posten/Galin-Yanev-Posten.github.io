@@ -79,28 +79,7 @@ export default function Profile() {
     };
 
     const handleCancel = async () => {
-        setIsEditing(false);
-        setError("");
-        setSuccess("");
-        // Reload data from Firestore
-        if (currentUser) {
-            try {
-                const profileData = await getUserProfile(currentUser.uid);
-                if (profileData) {
-                    setFormData({
-                        firstName: profileData.firstName || "",
-                        lastName: profileData.lastName || "",
-                        email: profileData.email || currentUser.email || "",
-                        avatar: profileData.avatar || "",
-                    });
-                }
-            } catch {
-                setError("Failed to reload profile data");
-            }
-        }
-        setTimeout(() => {
-            navigate("/dashboard", { replace: true });
-        }, 1500);
+        navigate("/dashboard", { replace: true });
     };
 
     const handleSave = async (e) => {
@@ -152,7 +131,7 @@ export default function Profile() {
                 {success && <p className="text-green-600 text-sm mb-4 text-center bg-green-50 p-2 rounded">{success}</p>}
 
                 {!isEditing ? (
-                    <ProfileView formData={formData} onEdit={handleEdit} />
+                    <ProfileView formData={formData} onEdit={handleEdit} onCancel={() => navigate("/dashboard", { replace: true })} />
                 ) : (
                     <ProfileForm
                         formData={formData}

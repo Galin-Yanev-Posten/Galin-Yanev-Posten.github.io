@@ -1,13 +1,13 @@
 import {
   createUserWithEmailAndPassword,
+  onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged,
 } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "./config";
 
-export async function signUp(email, password, displayName) {
+export async function signUp(email, password, displayName, firstName, lastName) {
   const userCredential = await createUserWithEmailAndPassword(
     auth,
     email,
@@ -17,7 +17,10 @@ export async function signUp(email, password, displayName) {
 
   await setDoc(doc(db, "users", user.uid), {
     displayName,
+    firstName,  
+    lastName,
     email,
+    avatar: "",
     createdAt: new Date().toISOString(),
   });
 
@@ -44,3 +47,4 @@ export async function updateUserProfile(userId, data) {
 }
 
 export { auth, onAuthStateChanged };
+

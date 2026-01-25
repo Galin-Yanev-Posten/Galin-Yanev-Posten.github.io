@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signUp } from "../firebase/auth";
+import { getUserProfile, signUp } from "../firebase/auth";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -61,8 +61,30 @@ export default function SignUp() {
 
       // Create user with Firebase
       const displayName = `${formData.firstName} ${formData.lastName}`;
-      await signUp(formData.email, formData.password, displayName);
-
+      const user = await signUp(
+        formData.email,
+        formData.password,
+        displayName,
+        formData.firstName,
+        formData.lastName
+      );
+      // Fetch user profile from Firestore
+      const profileData = await getUserProfile(user.uid);
+      if (profileData) {
+        localStorage.setItem("userData", JSON.stringify({
+          firstName: profileData.firstName || "",
+          lastName: profileData.lastName || "",
+          email: profileData.email || user.email || "",
+          avatar: profileData.avatar || "",
+        }));
+      } else {
+        localStorage.setItem("userData", JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          avatar: "",
+        }));
+      }
       console.log("Sign up successful, redirecting to dashboard...");
       navigate("/dashboard", { replace: true });
     } catch (err) {
