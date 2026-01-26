@@ -1,7 +1,8 @@
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import StocksTable from "../components/StocksList/StocksTable";
+import { getUserProfile } from "../firebase/auth";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -12,10 +13,39 @@ export default function Dashboard() {
   });
 
   useEffect(() => {
-    const data = localStorage.getItem("userData");
-    if (data) {
-      setUserData(JSON.parse(data));
-    }
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Try to get fresh data from Firestore
+        try {
+          const profileData = await getUserProfile(user.uid);
+          if (profileData) {
+            const data = {
+              firstName: profileData.firstName || "",
+              lastName: profileData.lastName || "",
+              email: profileData.email || user.email || "",
+              avatar: profileData.avatar || "",
+            };
+            setUserData(data);
+            localStorage.setItem("userData", JSON.stringify(data));
+          } else {
+            // Fallback to localStorage
+            const localData = localStorage.getItem("userData");
+            if (localData) {
+              setUserData(JSON.parse(localData));
+            }
+          }
+        } catch {
+          // Fallback to localStorage on error
+          const localData = localStorage.getItem("userData");
+          if (localData) {
+            setUserData(JSON.parse(localData));
+          }
+        }
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   function handleLogout() {
